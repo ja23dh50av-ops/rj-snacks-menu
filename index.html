@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R J SNACKS - Menu & Orders</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #121212; color: #e0e0e0; padding: 20px; }
+        header { text-align: center; margin-bottom: 30px; }
+        header h1 { color: #ff9800; font-size: 2.2rem; margin-bottom: 5px; }
+        header p { color: #aaa; font-size: 1rem; }
+        .category { margin-bottom: 25px; }
+        .category h2 { color: #fff; border-bottom: 2px solid #ff9800; padding-bottom: 5px; margin-bottom: 15px; font-size: 1.4rem; }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
+        .menu-card { background: #1e1e1e; border-radius: 10px; padding: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); display: flex; flex-direction: column; justify-content: space-between; }
+        .item-info h3 { font-size: 1.2rem; color: #fff; margin-bottom: 5px; }
+        .item-info p { color: #aaa; font-size: 0.9rem; margin-bottom: 15px; }
+        .item-footer { display: flex; justify-content: space-between; align-items: center; }
+        .price { font-size: 1.1rem; color: #4caf50; font-weight: bold; }
+        .order-btn { background: #25d366; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; text-decoration: none; font-size: 0.9rem; }
+        .order-btn:hover { background: #20ba5a; }
+        footer { text-align: center; margin-top: 40px; color: #777; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>R J SNACKS</h1>
+        <p>Fresh & Crispy Veg-NonVeg Fast Food</p>
+    </header>
+
+    <div class="category">
+        <h2>🔥 Special Non-Veg Menu</h2>
+        <div class="menu-grid">
+            <div class="menu-card">
+                <div class="item-info">
+                    <h3>Chicken Popcorn</h3>
+                    <p>Crispy, bite-sized golden fried chicken chunks loaded with spices.</p>
+                </div>
+                <div class="item-footer">
+                    <span class="price">₹149</span>
+                    <a href="https://wa.me/?text=Hi,%20I%20want%20to%20order%20Chicken%20Popcorn%20from%20R%20J%20SNACKS." class="order-btn" target="_blank">Order on WhatsApp</a>
+                </div>
+            </div>
+
+            <div class="menu-card">
+                <div class="item-info">
+                    <h3>Chicken Cheese Pockets</h3>
+                    <p>Crispy pockets stuffed with juicy chicken and melting cheese.</p>
+                </div>
+                <div class="item-footer">
+                    <span class="price">₹179</span>
+                    <a href="https://wa.me/?text=Hi,%20I%20want%20to%20order%20Chicken%20Cheese%20Pockets%20from%20R%20J%20SNACKS." class="order-btn" target="_blank">Order on WhatsApp</a>
+                </div>
+            </div>
+
+            <div class="menu-card">
+                <div class="item-info">
+                    <h3>Pizza Pockets</h3>
+                    <p>Delicious crispy pockets packed with pizza sauce, veggies, and cheese.</p>
+                </div>
+                <div class="item-footer">
+                    <span class="price">₹129</span>
+                    <a href="https://wa.me/?text=Hi,%20I%20want%20to%20order%20Pizza%20Pockets%20from%20R%20J%20SNACKS." class="order-btn" target="_blank">Order on WhatsApp</a>
+                </div>
+            </div>
+
+            <div class="menu-card">
+                <div class="item-info">
+                    <h3>Chicken Nuggets</h3>
+                    <p>Classic tender chicken nuggets fried to golden perfection.</p>
+                </div>
+                <div class="item-footer">
+                    <span class="price">₹139</span>
+                    <a href="https://wa.me/?text=Hi,%20I%20want%20to%20order%20Chicken%20Nuggets%20from%20R%20J%20SNACKS." class="order-dfn order-btn" target="_blank">Order on WhatsApp</a>
+                </div>
+            </div>
+
+            <div class="menu-card">
+                <div class="item-info">
+                    <h3>Prawns Bites</h3>
+                    <p>Crunchy, flavorful seafood bites seasoned with special spices.</p>
+                </div>
+                <div class="item-footer">
+                    <span class="price">₹199</span>
+                    <a href="https://wa.me/?text=Hi,%20I%20want%20to%20order%20Prawns%20Bites%20from%20R%20J%20SNACKS." class="order-btn" target="_blank">Order on WhatsApp</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 R J SNACKS. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
