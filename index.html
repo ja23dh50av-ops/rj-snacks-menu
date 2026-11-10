@@ -11,7 +11,6 @@
         header h1 { color: #ff9800; font-size: 2.2rem; margin-bottom: 5px; }
         header p { color: #aaa; font-size: 1rem; }
         
-        /* Admin Open Button */
         .admin-open-btn { position: absolute; top: 0; right: 0; background: #333; color: #ff9800; border: 1px solid #ff9800; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
         .admin-open-btn:hover { background: #ff9800; color: #fff; }
 
@@ -43,19 +42,23 @@
         .checkout-btn:hover { background: #20ba5a; }
 
         /* Admin Modal Styling */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; padding: 15px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; padding: 15px; }
         .modal-content { background: #1e1e1e; padding: 25px; border-radius: 12px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; border: 1px solid #ff9800; }
         .modal-content h2 { color: #ff9800; margin-bottom: 15px; font-size: 1.5rem; text-align: center; }
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-size: 0.9rem; margin-bottom: 5px; color: #ccc; }
         .form-group input, .form-group textarea { width: 100%; padding: 10px; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 6px; font-size: 0.95rem; }
+        .form-group input[type="file"] { padding: 7px; cursor: pointer; }
+        
         .modal-btn { background: #4caf50; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; font-size: 1rem; }
         .modal-btn:hover { background: #43a047; }
         .close-modal { background: #f44336; margin-top: 8px; }
         .close-modal:hover { background: #e53935; }
         
         .admin-item-row { display: flex; justify-content: space-between; align-items: center; background: #2a2a2a; padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; }
-        .del-item-btn { background: #f44336; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+        .admin-actions { display: flex; gap: 5px; }
+        .edit-item-btn { background: #ff9800; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
+        .del-item-btn { background: #f44336; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
 
         footer { text-align: center; margin-top: 40px; color: #777; font-size: 0.85rem; }
     </style>
@@ -81,30 +84,32 @@
     <!-- Admin Panel Modal -->
     <div class="modal" id="adminModal">
         <div class="modal-content">
-            <h2>⚙️ Customize Menu</h2>
+            <h2 id="modalTitle">⚙️ Add New Snack</h2>
             
-            <h3 style="color:#fff; font-size:1.1rem; margin-bottom:10px;">Add New Snack</h3>
+            <input type="hidden" id="editIndex" value="">
             <div class="form-group">
                 <label>Snack Name</label>
-                <input type="text" id="newName" placeholder="e.g. Veg Burger">
+                <input type="text" id="itemName" placeholder="e.g. Veg Burger">
             </div>
             <div class="form-group">
                 <label>Price (₹)</label>
-                <input type="number" id="newPrice" placeholder="e.g. 99">
+                <input type="number" id="itemPrice" placeholder="e.g. 99">
             </div>
             <div class="form-group">
                 <label>Description</label>
-                <input type="text" id="newDesc" placeholder="Short description...">
+                <input type="text" id="itemDesc" placeholder="Short description...">
             </div>
             <div class="form-group">
-                <label>Image URL (Photo Link)</label>
-                <input type="text" id="newImg" placeholder="Paste image link here">
+                <label>Upload Photo from Device</label>
+                <input type="file" id="itemImgFile" accept="image/*">
             </div>
-            <button class="modal-btn" onclick="addNewProduct()">➕ Add Item to Menu</button>
+            
+            <button class="modal-btn" id="saveItemBtn" onclick="saveProduct()">➕ Add Item to Menu</button>
+            <button class="modal-btn" id="cancelEditBtn" onclick="resetForm()" style="display:none; background:#555;">Cancel Edit</button>
 
             <hr style="border:0; border-top:1px solid #444; margin:20px 0;">
 
-            <h3 style="color:#fff; font-size:1.1rem; margin-bottom:10px;">Existing Items (Delete / Manage)</h3>
+            <h3 style="color:#fff; font-size:1.1rem; margin-bottom:10px;">Existing Items (Edit / Delete)</h3>
             <div id="adminItemsList"></div>
 
             <button class="modal-btn close-modal" onclick="closeAdminModal()">Close & Save</button>
@@ -116,7 +121,6 @@
     </footer>
 
     <script>
-        // Default Products agar pehli baar khule
         const defaultProducts = [
             { id: 1, name: "Chicken Popcorn", price: 149, desc: "Crispy, bite-sized golden fried chicken chunks loaded with spices.", img: "https://images.unsplash.com/photo-1562967914-608f82629710?w=500&auto=format&fit=crop&q=60" },
             { id: 2, name: "Chicken Cheese Pockets", price: 179, desc: "Crispy pockets stuffed with juicy chicken and melting cheese.", img: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=500&auto=format&fit=crop&q=60" },
@@ -125,7 +129,6 @@
             { id: 5, name: "Prawns Bites", price: 199, desc: "Crunchy, flavorful seafood bites seasoned with special spices.", img: "https://images.unsplash.com/photo-1565680314216-59aae2a70366?w=500&auto=format&fit=crop&q=60" }
         ];
 
-        // LocalStorage se products load karenge taki save rahe
         let products = JSON.parse(localStorage.getItem('rj_products')) || defaultProducts;
         let cart = {};
 
@@ -209,49 +212,99 @@
 
         function closeAdminModal() {
             document.getElementById('adminModal').style.display = 'none';
-            renderMenu();
+            renderMenu(); // Bina page refresh kiye turant menu update karega
         }
 
         function renderAdminItems() {
             const listContainer = document.getElementById('adminItemsList');
             listContainer.innerHTML = '';
-            products.forEach(item => {
+            products.forEach((item, index) => {
                 listContainer.innerHTML += `
                     <div class="admin-item-row">
                         <span><b>${item.name}</b> (₹${item.price})</span>
-                        <button class="del-item-btn" onclick="deleteProduct(${item.id})">Delete</button>
+                        <div class="admin-actions">
+                            <button class="edit-item-btn" onclick="editProduct(${index})">Edit</button>
+                            <button class="del-item-btn" onclick="deleteProduct(${item.id})">Delete</button>
+                        </div>
                     </div>
                 `;
             });
         }
 
-        function addNewProduct() {
-            let name = document.getElementById('newName').value.trim();
-            let price = parseFloat(document.getElementById('newPrice').value);
-            let desc = document.getElementById('newDesc').value.trim();
-            let img = document.getElementById('newImg').value.trim();
+        function saveProduct() {
+            let name = document.getElementById('itemName').value.trim();
+            let price = parseFloat(document.getElementById('itemPrice').value);
+            let desc = document.getElementById('itemDesc').value.trim();
+            let editIndex = document.getElementById('editIndex').value;
+            let fileInput = document.getElementById('itemImgFile');
 
             if (!name || isNaN(price)) {
                 alert("Please enter valid Snack Name and Price!");
                 return;
             }
 
-            if (!img) {
-                img = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60";
+            let processItem = (imgUrl) => {
+                if (editIndex === "") {
+                    // Add New Item
+                    let newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+                    products.push({ id: newId, name, price, desc, img: imgUrl });
+                    alert("New item added successfully!");
+                } else {
+                    // Update Existing Item
+                    let idx = parseInt(editIndex);
+                    products[idx].name = name;
+                    products[idx].price = price;
+                    products[idx].desc = desc;
+                    if (imgUrl) {
+                        products[idx].img = imgUrl;
+                    }
+                    alert("Item updated successfully!");
+                    resetForm();
+                }
+
+                localStorage.setItem('rj_products', JSON.stringify(products));
+                clearFormInputs();
+                renderAdminItems();
+                renderMenu();
+            };
+
+            if (fileInput.files && fileInput.files[0]) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    processItem(e.target.result);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                let defaultImg = editIndex !== "" ? products[parseInt(editIndex)].img : "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60";
+                processItem(defaultImg);
             }
+        }
 
-            let newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+        function editProduct(index) {
+            let item = products[index];
+            document.getElementById('itemName').value = item.name;
+            document.getElementById('itemPrice').value = item.price;
+            document.getElementById('itemDesc').value = item.desc;
+            document.getElementById('editIndex').value = index;
+            
+            document.getElementById('modalTitle').innerText = "⚙️ Edit Snack Details";
+            document.getElementById('saveItemBtn').innerText = "💾 Save Changes";
+            document.getElementById('cancelEditBtn').style.display = "block";
+        }
 
-            products.push({ id: newId, name, price, desc, img });
-            localStorage.setItem('rj_products', JSON.stringify(products));
+        function resetForm() {
+            clearFormInputs();
+            document.getElementById('editIndex').value = "";
+            document.getElementById('modalTitle').innerText = "⚙️ Add New Snack";
+            document.getElementById('saveItemBtn').innerText = "➕ Add Item to Menu";
+            document.getElementById('cancelEditBtn').style.display = "none";
+        }
 
-            document.getElementById('newName').value = '';
-            document.getElementById('newPrice').value = '';
-            document.getElementById('newDesc').value = '';
-            document.getElementById('newImg').value = '';
-
-            renderAdminItems();
-            alert("New item added successfully!");
+        function clearFormInputs() {
+            document.getElementById('itemName').value = '';
+            document.getElementById('itemPrice').value = '';
+            document.getElementById('itemDesc').value = '';
+            document.getElementById('itemImgFile').value = '';
         }
 
         function deleteProduct(id) {
@@ -259,6 +312,7 @@
                 products = products.filter(p => p.id !== id);
                 localStorage.setItem('rj_products', JSON.stringify(products));
                 renderAdminItems();
+                renderMenu();
             }
         }
 
