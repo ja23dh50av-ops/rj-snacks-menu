@@ -24,7 +24,7 @@
         .add-btn { background: #ff9800; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.9rem; transition: 0.2s; }
         .add-btn:hover { background: #e68900; }
 
-        /* Floating Cart Bar (Zomato/Swiggy Style) */
+        /* Floating Cart Bar */
         .cart-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #1f1f1f; border-top: 2px solid #ff9800; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 -4px 10px rgba(0,0,0,0.5); z-index: 1000; }
         .cart-info { font-size: 1.1rem; color: #fff; font-weight: bold; }
         .checkout-btn { background: #25d366; color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem; text-decoration: none; display: flex; align-items: center; gap: 8px; }
@@ -58,6 +58,7 @@
     </footer>
 
     <script>
+        // Yaha aap apne items add, delete ya unke price change kar sakte hain
         const products = [
             { id: 1, name: "Chicken Popcorn", price: 149, desc: "Crispy, bite-sized golden fried chicken chunks loaded with spices." },
             { id: 2, name: "Chicken Cheese Pockets", price: 179, desc: "Crispy pockets stuffed with juicy chicken and melting cheese." },
@@ -129,6 +130,8 @@
             message += `\n*Total Amount: ₹${totalPrice}*\nPlease confirm my order!`;
 
             let encodedMessage = encodeURIComponent(message);
+            
+            // Yaha aap apna WhatsApp number badal sakte hain (jaise 919224162350 ki jagah koi aur number)
             let whatsappUrl = `https://wa.me/919224162350?text=${encodedMessage}`;
             window.open(whatsappUrl, '_blank');
         }
