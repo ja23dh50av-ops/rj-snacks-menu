@@ -6,7 +6,7 @@
     <title>R J SNACKS - Menu & Cart</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #121212; color: #e0e0e0; padding: 20px; padding-bottom: 100px; }
+        body { background-color: #121212; color: #e0e0e0; padding: 20px; padding-bottom: 120px; }
         header { text-align: center; margin-bottom: 30px; position: relative; }
         header h1 { color: #ff9800; font-size: 2.2rem; margin-bottom: 5px; }
         header p { color: #aaa; font-size: 1rem; }
@@ -14,15 +14,20 @@
         .category { margin-bottom: 25px; max-width: 1200px; margin-left: auto; margin-right: auto; }
         .category h2 { color: #fff; border-bottom: 2px solid #ff9800; padding-bottom: 5px; margin-bottom: 15px; font-size: 1.4rem; }
         
-        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; }
         .menu-card { background: #1e1e1e; border-radius: 10px; padding: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); display: flex; flex-direction: column; justify-content: space-between; }
         .item-info h3 { font-size: 1.2rem; color: #fff; margin-bottom: 5px; }
         .item-info p { color: #aaa; font-size: 0.9rem; margin-bottom: 15px; }
         .item-footer { display: flex; justify-content: space-between; align-items: center; }
         .price { font-size: 1.1rem; color: #4caf50; font-weight: bold; }
         
-        .add-btn { background: #ff9800; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.9rem; transition: 0.2s; }
-        .add-btn:hover { background: #e68900; }
+        /* Quantity Controls (+ / -) */
+        .cart-controls { display: flex; align-items: center; gap: 10px; background: #2a2a2a; padding: 5px 10px; border-radius: 6px; }
+        .qty-btn { background: #ff9800; color: white; border: none; width: 28px; height: 28px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; }
+        .qty-btn:hover { background: #e68900; }
+        .qty-display { font-size: 1rem; font-weight: bold; color: #fff; min-width: 20px; text-align: center; }
+        .add-initial-btn { background: #ff9800; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
+        .add-initial-btn:hover { background: #e68900; }
 
         /* Floating Cart Bar */
         .cart-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #1f1f1f; border-top: 2px solid #ff9800; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 -4px 10px rgba(0,0,0,0.5); z-index: 1000; }
@@ -58,7 +63,7 @@
     </footer>
 
     <script>
-        // Yaha aap apne items add, delete ya unke price change kar sakte hain
+        // Yaha aap apne items add ya price change kar sakte hain
         const products = [
             { id: 1, name: "Chicken Popcorn", price: 149, desc: "Crispy, bite-sized golden fried chicken chunks loaded with spices." },
             { id: 2, name: "Chicken Cheese Pockets", price: 179, desc: "Crispy pockets stuffed with juicy chicken and melting cheese." },
@@ -73,6 +78,21 @@
             const container = document.getElementById('menu-container');
             container.innerHTML = '';
             products.forEach(item => {
+                let qty = cart[item.id] ? cart[item.id].qty : 0;
+                
+                let actionHTML = '';
+                if (qty === 0) {
+                    actionHTML = `<button class="add-initial-btn" onclick="changeQty(${item.id}, 1)">Add to Cart</button>`;
+                } else {
+                    actionHTML = `
+                        <div class="cart-controls">
+                            <button class="qty-btn" onclick="changeQty(${item.id}, -1)">-</button>
+                            <span class="qty-display">${qty}</span>
+                            <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
+                        </div>
+                    `;
+                }
+
                 container.innerHTML += `
                     <div class="menu-card">
                         <div class="item-info">
@@ -81,19 +101,25 @@
                         </div>
                         <div class="item-footer">
                             <span class="price">₹${item.price}</span>
-                            <button class="add-btn" onclick="addToCart(${item.id})">Add to Cart</button>
+                            ${actionHTML}
                         </div>
                     </div>
                 `;
             });
         }
 
-        function addToCart(id) {
+        function changeQty(id, amount) {
             if (!cart[id]) {
-                cart[id] = { ...products.find(p => p.id === id), qty: 1 };
+                if (amount > 0) {
+                    cart[id] = { ...products.find(p => p.id === id), qty: 1 };
+                }
             } else {
-                cart[id].qty += 1;
+                cart[id].qty += amount;
+                if (cart[id].qty <= 0) {
+                    delete cart[id];
+                }
             }
+            renderMenu();
             updateCartBar();
         }
 
@@ -110,7 +136,7 @@
 
             if (totalItems > 0) {
                 cartBar.style.display = 'flex';
-                cartSummary.innerText = `${totalItems} Items added | Total: ₹${totalPrice}`;
+                cartSummary.innerText = `${totalItems} Items | Total: ₹${totalPrice}`;
             } else {
                 cartBar.style.display = 'none';
             }
@@ -130,8 +156,6 @@
             message += `\n*Total Amount: ₹${totalPrice}*\nPlease confirm my order!`;
 
             let encodedMessage = encodeURIComponent(message);
-            
-            // Yaha aap apna WhatsApp number badal sakte hain (jaise 919224162350 ki jagah koi aur number)
             let whatsappUrl = `https://wa.me/919224162350?text=${encodedMessage}`;
             window.open(whatsappUrl, '_blank');
         }
